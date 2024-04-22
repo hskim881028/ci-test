@@ -1,0 +1,79 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - rc
+  workflow_dispatch:
+
+jobs:
+  buildForAllSupportedPlatforms:
+    name: Build for ${{ matrix.targetPlatform }}
+    runs-on: ubuntu-latest    
+    strategy:
+      matrix:
+        targetPlatform:
+          - StandaloneOSX
+          - StandaloneWindows64
+
+    steps:
+     # Cleanup disk space
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: false
+          haskell: false
+          large-packages: false
+          docker-images: false
+          swap-storage: false
+          
+      # Check Out
+      - name: Check out
+        uses: actions/checkout@v4
+
+      # Cache Library
+      - name: Cache library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+  
+      # Unity Build
+      - name: Unity build
+        uses: game-ci/unity-builder@v4
+        env:          
+          UNITY_VERSION: 2023.2.16f1
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}          
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+
+      # Upload Artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+
+  notifySlack:
+    name: Notify Slack
+    needs: [buildForAllSupportedPlatforms]
+    runs-on: ubuntu-latest    
+    steps:
+      - name: Notify to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              "text": "<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Artifact>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
