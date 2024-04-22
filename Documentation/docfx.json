@@ -2,80 +2,75 @@
   "metadata": [
     {
       "src": [
-                {
-                    "src": "..",
-                    "files": [
-                        "Assets/Scripts/**/*.cs"
-                    ],
-                    "exclude": [
-                        "Assets/Tests/**"
-                    ]
-                }
-            ],
+        {
+          "src": "..",
+          "files": [
+            "Assets/Scripts/**/*.cs"
+          ],
+          "exclude": [
+            "Assets/Tests/**"
+          ]
+        }
+      ],
       "globalNamespaceId": "Hskim",
       "filter": "filterConfig.yml",
       "dest": "api"
     }
   ],
-   "build": {
-        "globalMetadata": {
-            "_appTitle": "ci-test documentation",
-            "_appFooter": "ci-test documentation",
-            "_appLogoPath": "resources/logo.svg",
-            "_enableSearch": true
-        },
-        "content": [
-            {
-                "files": [
-                    "toc.yml",
-                    "index.md"
-                ]
-            },
-            {
-                "src": "api",
-                "files": [
-                    "*.yml"
-                ],
-                "dest": "api"
-            },
-            {
-                "src": "manual",
-                "files": [
-                    "toc.yml",
-                    "*.md"
-                ],
-                "dest": "manual"
-            }
+  "build": {
+    "globalMetadata": {
+      "_appTitle": "ci-test documentation",
+      "_appFooter": "ci-test documentation",
+      "_appLogoPath": "resources/logo.svg",
+      "_enableSearch": true
+    },
+    "content": [
+      {
+        "files": [
+          "toc.yml",
+          "index.md"
+        ]
+      },
+      {
+        "src": "api",
+        "files": [
+          "*.yml"
         ],
-        "overwrite": [
-            {
-                "src": "..",
-                "files": [
-                    "Assets/**/*.md"
-                ]
-            }
+        "dest": "api"
+      },
+      {
+        "src": "manual",
+        "files": [
+          "toc.yml",
+          "*.md"
         ],
-        "resource": [
-            {
-                "files": [
-                    "resources/**/*"
-                ]
-            }
-        ],
-        "sitemap": {
-            "baseUrl": "https://hskim881028.github.io/ci-test",
-            "changefreq": "weekly",
-            "fileOptions": {
-                "api/*": {
-                    "changefreq": "daily"
-                }
-            }
-        },
-        "xref": [           
-        ],
-        "xrefService": [
-            "https://xref.docs.microsoft.com/query?uid={uid}"
-        ],
-        "dest": "../_site"
-    }
+        "dest": "manual"
+      }
+    ],
+    "overwrite": [
+      {
+        "src": "..",
+        "files": [
+          "Assets/**/*.md"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "resources/**/*"
+        ]
+      }
+    ],
+    "sitemap": {
+      "baseUrl": "https://hskim881028.github.io/ci-test",
+      "changefreq": "weekly",
+      "fileOptions": {
+        "api/*": {
+          "changefreq": "daily"
+        }
+      }
+    },
+    "dest": "../_site"
+  }
 }
