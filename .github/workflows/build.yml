@@ -1,4 +1,8 @@
 name: Build
+
+env:
+  COMMIT_MESSAGE: "docs: Deploy docs"
+  
 'on':
   push:
     branches:
@@ -6,6 +10,23 @@ name: Build
       - rc
   workflow_dispatch: null
 jobs:
+  check_commit_message:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.commit_message.outputs.skip }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Check last commit message
+        id: commit_message
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
+          echo "Last commit message: $COMMIT_MESSAGE"
+          if [[ "$COMMIT_MESSAGE" == ${{ env.COMMIT_MESSAGE }} ]]; then
+            echo "::set-output name=skip::true"
+          else
+            echo "::set-output name=skip::false"
+          fi
   buildDocs:
     name: Build Docs
     runs-on: windows-latest
@@ -44,7 +65,7 @@ jobs:
           git config user.name hskim881028
           git config user.email hskim881028@gmail.com
           git add .
-          git commit -m "docs: Deploy docs"
+          git commit -m ${{ env.COMMIT_MESSAGE }}
           git push
   buildForAllSupportedPlatforms:
     name: 'Build for ${{ matrix.targetPlatform }}'
