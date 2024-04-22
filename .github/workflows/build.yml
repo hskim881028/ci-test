@@ -1,7 +1,7 @@
 name: Build
 
 env:
-  COMMIT_MESSAGE: "docs: Deploy docs"
+  DEPLOY_DOCS_COMMIT_MESSAGE: "docs: Deploy docs"
   
 'on':
   push:
@@ -23,7 +23,7 @@ jobs:
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
           echo "Last commit message: $COMMIT_MESSAGE"
-          if [[ "$COMMIT_MESSAGE" == ${{ env.COMMIT_MESSAGE }} ]]; then
+          if [[ "$COMMIT_MESSAGE" == "${DEPLOY_DOCS_COMMIT_MESSAGE}" ]]; then
             echo "::set-output name=skip::true"
           else
             echo "::set-output name=skip::false"
@@ -68,7 +68,7 @@ jobs:
           git config user.name hskim881028
           git config user.email hskim881028@gmail.com
           git add .
-          git commit -m ${{ env.COMMIT_MESSAGE }}
+          git commit -m "${DEPLOY_DOCS_COMMIT_MESSAGE}"
           git push
   buildForAllSupportedPlatforms:
     name: 'Build for ${{ matrix.targetPlatform }}'
