@@ -43,10 +43,35 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+  deployDocs:
+    needs: [buildDocs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ci-test Repository
+        uses: actions/checkout@v2
+        with:
+          repository: hskim881028/ci-test
+          token: ${{ secrets.PAT }}
+
+      - name: Download site artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: _site
+
+      - name: Deploy to ci-test Repository
+        run: |
+          cp -r _site/*
+          git config user.name hskim881028
+          git config user.email hskim881028@gmail.com
+          git add .
+          git commit -m "docs: Deploy docs"
+          git push
+
+  
   buildForAllSupportedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest    
-    needs: [buildDocs]
+    needs: [deployDocs]
     strategy:
       matrix:
         targetPlatform:
