@@ -10,7 +10,8 @@ env:
       - rc
   workflow_dispatch: null
 jobs:
-  check_commit_message:
+  CheckCommitMessage:
+    name: Check commit message
     runs-on: ubuntu-latest
     outputs:
       skip: ${{ steps.commit_message.outputs.skip }}
@@ -29,6 +30,8 @@ jobs:
           fi
   buildDocs:
     name: Build Docs
+    needs:
+      - CheckCommitMessage
     runs-on: windows-latest
     steps:
       - name: Checkout
