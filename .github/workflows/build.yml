@@ -6,15 +6,6 @@ on:
       - main
       - rc
   workflow_dispatch:
-
-permissions:
-  actions: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
   
 jobs:
   buildDocs:
@@ -24,13 +15,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install DocFX
+      - name: Install Docfx
         run: choco install -y docfx
 
       - name: Use README.md as index.md
         run: cp README.md Documentation/index.md
 
-      - name: Build
+      - name: Build Docfx
         run: docfx Documentation/docfx.json
 
       - name: Upload site artifact
@@ -38,17 +29,13 @@ jobs:
         with:
           name: _site
           path: _site
-          
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
 
   deployDocs:
     name: Deploy Docs    
     needs: [buildDocs]
     runs-on: ubuntu-latest    
     steps:
-      - name: Checkout ci-test Repository
+      - name: Checkout hskim881028/ci-test Repository
         uses: actions/checkout@v2
         with:
           repository: hskim881028/ci-test
@@ -59,7 +46,7 @@ jobs:
         with:
           name: _site
 
-      - name: Deploy to ci-test Repository
+      - name: Deploy to hskim881028/ci-test Repository
         run: |
           cp -r _site/*
           git config user.name hskim881028
