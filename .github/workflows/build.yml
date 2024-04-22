@@ -19,29 +19,22 @@ concurrency:
 jobs:
   buildDocs:
     name: Build and Deploy Docs
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-        
-      - name: Dotnet Setup
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.x
-      - run: dotnet tool update -g docfx
+        uses: actions/checkout@v2
 
-      - name: Build Docfx
-        run: |
-          docfx Documentation/docfx.json
-          if [ -d "_site" ]; then
-            echo "_site directory exists."
-          else
-            echo "_site directory does not exist, creating..."
-            mkdir _site
-          fi
+      - name: Install DocFX
+        run: choco install -y docfx
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Use README.md as index.md
+        run: cp README.md Documentation/index.md
+
+      - name: Build
+        run: docfx Documentation/docfx.json
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v1
         with:
           name: _site
           path: _site
