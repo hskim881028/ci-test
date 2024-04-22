@@ -31,7 +31,14 @@ jobs:
       - run: dotnet tool update -g docfx
 
       - name: Build Docfx
-        run: docfx Documentation/docfx.json
+        run: |
+          docfx Documentation/docfx.json
+          if [ -d "_site" ]; then
+            echo "_site directory exists."
+          else
+            echo "_site directory does not exist, creating..."
+            mkdir _site
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
