@@ -1,7 +1,7 @@
 name: Build
 
 env:
-  DEPLOY_DOCS_COMMIT_MESSAGE: "docs: Deploy docs"
+  AUTOMATION_ACTOR: "GitHub Actions"
   
 'on':
   push:
@@ -10,29 +10,10 @@ env:
       - rc
   workflow_dispatch: null
 jobs:
-  CheckCommitMessage:
-    name: Check commit message
-    runs-on: ubuntu-latest
-    outputs:
-      skip: ${{ steps.commit_message.outputs.skip }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Check last commit message
-        id: commit_message
-        run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:%s)
-          echo "Last commit message: $COMMIT_MESSAGE"
-          if [[ "$COMMIT_MESSAGE" == "${DEPLOY_DOCS_COMMIT_MESSAGE}" ]]; then
-            echo "::set-output name=skip::true"
-          else
-            echo "::set-output name=skip::false"
-          fi
   buildDocs:
     name: Build Docs
-    needs:
-      - CheckCommitMessage
     runs-on: windows-latest
+    if: github.actor != env.AUTOMATION_ACTOR
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -52,6 +33,7 @@ jobs:
     needs:
       - buildDocs
     runs-on: ubuntu-latest
+    if: github.actor != env.AUTOMATION_ACTOR
     steps:
       - name: Checkout hskim881028/ci-test Repository
         uses: actions/checkout@v2
@@ -65,16 +47,17 @@ jobs:
       - name: Deploy to hskim881028/ci-test Repository
         run: |
           cp -r _site/* .
-          git config user.name hskim881028
-          git config user.email hskim881028@gmail.com
+          git config user.name "${{ env.AUTOMATION_ACTOR }}"
+          git config user.email ""
           git add .
-          git commit -m "${DEPLOY_DOCS_COMMIT_MESSAGE}"
+          git commit -m "docs: Deploy docs"
           git push
   buildForAllSupportedPlatforms:
     name: 'Build for ${{ matrix.targetPlatform }}'
     needs:
       - deployDocs
     runs-on: ubuntu-latest
+    if: github.actor != env.AUTOMATION_ACTOR
     strategy:
       matrix:
         targetPlatform:
@@ -120,6 +103,7 @@ jobs:
     needs:
       - buildForAllSupportedPlatforms
     runs-on: ubuntu-latest
+    if: github.actor != env.AUTOMATION_ACTOR
     steps:
       - name: Notify to Slack
         uses: 8398a7/action-slack@v3
