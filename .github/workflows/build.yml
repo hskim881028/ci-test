@@ -1,4 +1,4 @@
-name: Build
+name: Build and Deploy
 
 'on':
   push:
@@ -10,7 +10,7 @@ jobs:
   buildDocs:
     name: Build Docs
     runs-on: windows-latest
-    if: github.actor != 'github-actions'
+    if: "!contains(github.event.head_commit.message, 'github-actions')"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
     needs:
       - buildDocs
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions'
+    if: "!contains(github.event.head_commit.message, 'github-actions')"
     steps:
       - name: Checkout hskim881028/ci-test Repository
         uses: actions/checkout@v2
@@ -54,7 +54,7 @@ jobs:
     needs:
       - deployDocs
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions'
+    if: "!contains(github.event.head_commit.message, 'github-actions')"
     strategy:
       matrix:
         targetPlatform:
@@ -100,7 +100,7 @@ jobs:
     needs:
       - buildForAllSupportedPlatforms
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions'
+    if: "!contains(github.event.head_commit.message, 'github-actions')"
     steps:
       - name: Notify to Slack
         uses: 8398a7/action-slack@v3
