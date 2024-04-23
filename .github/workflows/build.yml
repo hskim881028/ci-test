@@ -10,7 +10,7 @@ jobs:
   buildDocs:
     name: Build Docs
     runs-on: windows-latest
-    if: github.actor != 'ActionRunner'
+    if: github.actor != 'github-actions'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
     needs:
       - buildDocs
     runs-on: ubuntu-latest
-    if: github.actor != 'ActionRunner'
+    if: github.actor != 'github-actions'
     steps:
       - name: Checkout hskim881028/ci-test Repository
         uses: actions/checkout@v2
@@ -44,17 +44,17 @@ jobs:
       - name: Deploy to hskim881028/ci-test Repository
         run: |
           cp -r _site/* .
-          git config user.name "ActionRunner"
-          git config user.email ""
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
           git add .
-          git commit -m "Automated changes by ${{ env.ACTION_RUNNER }}"
+          git commit -m "Deploy docs by github-actions"
           git push
   buildForAllSupportedPlatforms:
     name: 'Build for ${{ matrix.targetPlatform }}'
     needs:
       - deployDocs
     runs-on: ubuntu-latest
-    if: github.actor != 'ActionRunner'
+    if: github.actor != 'github-actions'
     strategy:
       matrix:
         targetPlatform:
@@ -100,7 +100,7 @@ jobs:
     needs:
       - buildForAllSupportedPlatforms
     runs-on: ubuntu-latest
-    if: github.actor != 'ActionRunner'
+    if: github.actor != 'github-actions'
     steps:
       - name: Notify to Slack
         uses: 8398a7/action-slack@v3
