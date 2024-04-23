@@ -6,13 +6,11 @@ name: Build
       - main
       - rc
   workflow_dispatch: null
-env:
-  ACTION_RUNNER: '${{ secrets.ACTION_RUNNER }}'
 jobs:
   buildDocs:
     name: Build Docs
     runs-on: windows-latest
-    if: github.actor != env.ACTION_RUNNER
+    if: github.actor != 'ActionRunner'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -32,7 +30,7 @@ jobs:
     needs:
       - buildDocs
     runs-on: ubuntu-latest
-    if: github.actor != env.ACTION_RUNNER
+    if: github.actor != 'ActionRunner'
     steps:
       - name: Checkout hskim881028/ci-test Repository
         uses: actions/checkout@v2
@@ -46,7 +44,7 @@ jobs:
       - name: Deploy to hskim881028/ci-test Repository
         run: |
           cp -r _site/* .
-          git config user.name "${{ env.ACTION_RUNNER }}"
+          git config user.name "ActionRunner"
           git config user.email ""
           git add .
           git commit -m "Automated changes by ${{ env.ACTION_RUNNER }}"
@@ -56,7 +54,7 @@ jobs:
     needs:
       - deployDocs
     runs-on: ubuntu-latest
-    if: github.actor != env.ACTION_RUNNER
+    if: github.actor != 'ActionRunner'
     strategy:
       matrix:
         targetPlatform:
@@ -102,7 +100,7 @@ jobs:
     needs:
       - buildForAllSupportedPlatforms
     runs-on: ubuntu-latest
-    if: github.actor != env.ACTION_RUNNER
+    if: github.actor != 'ActionRunner'
     steps:
       - name: Notify to Slack
         uses: 8398a7/action-slack@v3
