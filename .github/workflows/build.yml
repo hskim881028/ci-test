@@ -1,8 +1,5 @@
 name: Build
 
-env:
-  AUTOMATION_ACTOR: "GitHub Actions"
-  
 'on':
   push:
     branches:
@@ -13,7 +10,7 @@ jobs:
   buildDocs:
     name: Build Docs
     runs-on: windows-latest
-    if: github.actor != env.AUTOMATION_ACTOR
+    if: github.actor != secrets.ACTION_RUNNER
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -33,7 +30,7 @@ jobs:
     needs:
       - buildDocs
     runs-on: ubuntu-latest
-    if: github.actor != env.AUTOMATION_ACTOR
+    if: github.actor != secrets.ACTION_RUNNER
     steps:
       - name: Checkout hskim881028/ci-test Repository
         uses: actions/checkout@v2
@@ -47,7 +44,7 @@ jobs:
       - name: Deploy to hskim881028/ci-test Repository
         run: |
           cp -r _site/* .
-          git config user.name "${{ env.AUTOMATION_ACTOR }}"
+          git config user.name "${{ secrets.ACTION_RUNNER }}"
           git config user.email ""
           git add .
           git commit -m "docs: Deploy docs"
@@ -57,7 +54,7 @@ jobs:
     needs:
       - deployDocs
     runs-on: ubuntu-latest
-    if: github.actor != env.AUTOMATION_ACTOR
+    if: github.actor != secrets.ACTION_RUNNER
     strategy:
       matrix:
         targetPlatform:
@@ -103,7 +100,7 @@ jobs:
     needs:
       - buildForAllSupportedPlatforms
     runs-on: ubuntu-latest
-    if: github.actor != env.AUTOMATION_ACTOR
+    if: github.actor != secrets.ACTION_RUNNER
     steps:
       - name: Notify to Slack
         uses: 8398a7/action-slack@v3
