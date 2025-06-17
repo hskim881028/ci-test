@@ -41,6 +41,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: _site
+          path: _site
       - name: Deploy to hskim881028/ci-test Repository
         run: |
           mkdir -p docs
