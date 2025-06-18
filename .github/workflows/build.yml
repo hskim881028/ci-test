@@ -21,7 +21,7 @@ jobs:
       - name: Build Docfx
         run: docfx Documentation/docfx.json
       - name: Upload site artifact
-        uses: actions/upload-artifact@v4  
+        uses: actions/upload-artifact@v4
         with:
           name: _site
           path: _site
